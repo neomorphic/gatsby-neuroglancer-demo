@@ -1,5 +1,8 @@
 import * as React from "react"
-import Neuroglancer from "@janelia-flyem/react-neuroglancer";
+
+const Neuroglancer = React.lazy(() =>
+  import("@janelia-flyem/react-neuroglancer")
+)
 
 // styles
 const pageStyles = {
@@ -81,6 +84,7 @@ const badgeStyle = {
 
 // markup
 const IndexPage = () => {
+  const isSSR = typeof window === "undefined"
   return (
     <main style={pageStyles}>
       <title>Home Page</title>
@@ -100,7 +104,11 @@ const IndexPage = () => {
         </span>
       </p>
       <div style={{height: "600px", width: "100%"}}>
-      <Neuroglancer brainMapsClientId="NOT_A_VALID_ID" />
+      {!isSSR && (
+        <React.Suspense fallback={<div />}>
+          <Neuroglancer brainMapsClientId="NOT_A_VALID_ID" />
+        </React.Suspense>
+      )}
       </div>
     </main>
   )
